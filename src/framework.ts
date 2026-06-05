@@ -3,6 +3,8 @@ import { Context, Middleware } from './types'
 export class BaleBot {
     private middlewares: Middleware[] = []
     private handlers = new Map<string, Array<(ctx: Context) => any>>()
+    private commands = new Map<string, Array<(ctx: Context) => any>>()
+    private _hears: Array<{ pattern: RegExp | string; handler: (ctx: Context) => any }> = []
 
     constructor(public options: { token?: string } = {}) { }
 
@@ -11,13 +13,16 @@ export class BaleBot {
         return this
     }
 
-    private async runMiddlewares(ctx: Context) {
+    private async runMiddlewares(ctx: Context, finalNext: () => Promise<void> = async () => { }) {
         let idx = -1
         const runner = async (i: number): Promise<void> => {
             if (i <= idx) return
             idx = i
             const mw = this.middlewares[i]
-            if (!mw) return
+            if (!mw) {
+                await finalNext()
+                return
+            }
             await mw(ctx, () => runner(i + 1))
         }
         await runner(0)
@@ -31,17 +36,64 @@ export class BaleBot {
     }
 
     command(name: string, handler: (ctx: Context) => any) {
-        return this.on(`command:${name}`, handler)
+        const arr = this.commands.get(name) ?? []
+        arr.push(handler)
+        this.commands.set(name, arr)
+        return this
     }
 
     hears(pattern: RegExp | string, handler: (ctx: Context) => any) {
-        return this.on(`hears:${pattern.toString()}`, handler)
+        this._hears.push({ pattern, handler })
+        return this
+    }
+
+    private async callHandlers(list: Array<(ctx: Context) => any> | undefined, ctx: Context) {
+        if (!list) return
+        for (const h of list) {
+            try {
+                await h(ctx)
+            } catch (err) {
+                console.error('handler error', err)
+            }
+        }
+    }
+
+    private async dispatch(ctx: Context) {
+        const update = ctx.update ?? {}
+
+        // message event
+        if (update.message) {
+            await this.callHandlers(this.handlers.get('message'), ctx)
+
+            const text = update.message.text
+            if (typeof text === 'string') {
+                if (text.startsWith('/')) {
+                    const cmd = text.split(' ')[0].slice(1)
+                    await this.callHandlers(this.commands.get(cmd), ctx)
+                }
+
+                for (const h of this._hears) {
+                    try {
+                        if (h.pattern instanceof RegExp) {
+                            if (h.pattern.test(text)) await h.handler(ctx)
+                        } else {
+                            if (text.includes(h.pattern)) await h.handler(ctx)
+                        }
+                    } catch (err) {
+                        console.error('hears handler error', err)
+                    }
+                }
+            }
+        }
+
+        await this.callHandlers(this.handlers.get('update'), ctx)
     }
 
     async handleUpdate(update: any) {
         const ctx: Context = createContext(update, this)
-        await this.runMiddlewares(ctx)
-        // TODO: dispatch to handlers (command/hears/on)
+        await this.runMiddlewares(ctx, async () => {
+            await this.dispatch(ctx)
+        })
     }
 
     launch() {
