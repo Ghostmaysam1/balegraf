@@ -1,0 +1,22 @@
+{
+    "name": "balegraf",
+    "version": "0.1.0",
+    "description": "Telegraf-like framework for Bale messenger",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc -p .",
+        "dev": "ts-node src/examples/simple.ts",
+        "start": "node dist/examples/simple.js"
+    },
+    "keywords": [
+        "bale",
+        "bot",
+        "telegraf"
+    ],
+    "license": "MIT",
+    "devDependencies": {
+        "typescript": "^5.0.0",
+        "ts-node": "^10.0.0"
+    }
+}
