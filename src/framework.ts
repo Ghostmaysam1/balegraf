@@ -153,7 +153,8 @@ function createContext(update: any, bot: BaleBot): Context {
         bot,
         reply: async (text: string) => {
             if (!bot.api) {
-                throw new Error('Bale API client is not initialized')
+                console.log('[reply simulated]', text)
+                return
             }
             const chatId = update?.message?.chat?.id ?? update?.chat?.id
             if (!chatId) {

@@ -6,8 +6,9 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc -p .",
-        "dev": "ts-node src/examples/simple.ts",
-        "start": "node dist/examples/simple.js"
+        "dev": "ts-node src/examples/polling.ts",
+        "example": "ts-node src/examples/simple.ts",
+        "start": "node dist/examples/polling.js"
     },
     "keywords": [
         "bale",
@@ -19,7 +20,8 @@
         "node": ">=18"
     },
     "devDependencies": {
-        "typescript": "^5.0.0",
-        "ts-node": "^10.0.0"
+        "@types/node": "^25.9.1",
+        "ts-node": "^10.0.0",
+        "typescript": "^5.0.0"
     }
 }
