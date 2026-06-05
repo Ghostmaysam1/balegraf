@@ -1,12 +1,20 @@
 import { Context, Middleware } from './types'
+import { BaleApi } from './bale-api'
 
 export class BaleBot {
+    public api: BaleApi | null = null
+    private polling = false
+    private pollingOffset = 0
     private middlewares: Middleware[] = []
     private handlers = new Map<string, Array<(ctx: Context) => any>>()
     private commands = new Map<string, Array<(ctx: Context) => any>>()
     private _hears: Array<{ pattern: RegExp | string; handler: (ctx: Context) => any }> = []
 
-    constructor(public options: { token?: string } = {}) { }
+    constructor(public options: { token?: string } = {}) {
+        if (options.token) {
+            this.api = new BaleApi({ token: options.token })
+        }
+    }
 
     use(mw: Middleware) {
         this.middlewares.push(mw)
@@ -96,9 +104,46 @@ export class BaleBot {
         })
     }
 
-    launch() {
-        // TODO: start polling/webhook
-        console.log('BaleBot.launch() called — implement polling/webhook')
+    async launch(options: { polling?: { intervalMs?: number; limit?: number; timeout?: number } } = {}) {
+        if (!this.api) {
+            if (this.options.token) {
+                this.api = new BaleApi({ token: this.options.token })
+            } else {
+                throw new Error('BaleBot launch requires token option')
+            }
+        }
+
+        if (options.polling ?? true) {
+            await this.startPolling(options.polling)
+        }
+    }
+
+    async startPolling(pollingOptions: { intervalMs?: number; limit?: number; timeout?: number } = {}) {
+        if (!this.api) throw new Error('Bale API client is not initialized')
+
+        this.polling = true
+        const intervalMs = pollingOptions.intervalMs ?? 1000
+        const limit = pollingOptions.limit ?? 50
+        const timeout = pollingOptions.timeout ?? 20
+
+        while (this.polling) {
+            try {
+                const updates = await this.api.getUpdates(this.pollingOffset, limit, timeout)
+                for (const update of updates) {
+                    await this.handleUpdate(update)
+                    if (typeof update.update_id === 'number') {
+                        this.pollingOffset = update.update_id + 1
+                    }
+                }
+            } catch (err) {
+                console.error('Polling error:', err)
+                await new Promise((resolve) => setTimeout(resolve, intervalMs))
+            }
+        }
+    }
+
+    stop() {
+        this.polling = false
     }
 }
 
@@ -107,8 +152,14 @@ function createContext(update: any, bot: BaleBot): Context {
         update,
         bot,
         reply: async (text: string) => {
-            // placeholder reply implementation
-            console.log('[reply]', text)
+            if (!bot.api) {
+                throw new Error('Bale API client is not initialized')
+            }
+            const chatId = update?.message?.chat?.id ?? update?.chat?.id
+            if (!chatId) {
+                throw new Error('Unable to determine chat id for reply')
+            }
+            return bot.api.sendMessage(chatId, text)
         },
     }
 }
