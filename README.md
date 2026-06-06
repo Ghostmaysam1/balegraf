@@ -36,6 +36,12 @@ npm run dev
 npm run build
 ```
 
+## تست
+
+```bash
+npm test
+```
+
 ## نمونه کد
 
 ```ts

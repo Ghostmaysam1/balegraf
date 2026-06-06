@@ -8,12 +8,16 @@
         "build": "tsc -p .",
         "dev": "ts-node src/examples/polling.ts",
         "example": "ts-node src/examples/simple.ts",
-        "start": "node dist/examples/polling.js"
+        "start": "node dist/examples/polling.js",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "keywords": [
         "bale",
         "bot",
-        "telegraf"
+        "balegraf",
+        "bale-bot",
+        "bale_bot"
     ],
     "license": "MIT",
     "engines": {
@@ -22,6 +26,7 @@
     "devDependencies": {
         "@types/node": "^25.9.1",
         "ts-node": "^10.0.0",
-        "typescript": "^5.0.0"
+        "typescript": "^5.0.0",
+        "vitest": "^1.0.0"
     }
 }
