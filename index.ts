@@ -1,4 +1,5 @@
 import { Core } from './src/core/core'
+import { Context, Middleware } from './src/core/types';
 import { createRouter } from './src/router/router'
 
 export class Balegraf {
@@ -10,17 +11,17 @@ export class Balegraf {
         this.engine.use(this.router.middleware);
     }
 
-    command(name: string, handler: (ctx: any) => Promise<void>) {
+    command(name: string, handler: (ctx: Context) => Promise<void>) {
         this.router.command(name, handler)
         return this
     }
 
-    hears(pattern: string | RegExp, handler: (ctx: any) => Promise<void>) {
+    hears(pattern: string | RegExp, handler: (ctx: Context) => Promise<void>) {
         this.router.hears(pattern, handler)
         return this
     }
 
-    use(mw: any) {
+    use(mw: Middleware) {
         this.engine.use(mw)
         return this
     }

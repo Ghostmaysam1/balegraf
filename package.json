@@ -5,13 +5,20 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "tsc -p .",
-        "dev": "ts-node src/examples/polling.ts",
-        "example": "ts-node src/examples/simple.ts",
-        "start": "node dist/examples/polling.js",
-        "test": "vitest run",
-        "test:watch": "vitest"
+        "build": "tsc -p ."
     },
+    "files": [
+        "dist"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Ghostmaysam1/balegraf.git"
+    },
+    "homepage": "https://github.com/Ghostmaysam1/balegraf",
+    "bugs": {
+        "url": "https://github.com/Ghostmaysam1/balegraf/issues"
+    },
+    "author": "Meysam Asefi Najafi",
     "keywords": [
         "bale",
         "bot",
