@@ -1,4 +1,4 @@
-const BALE_API_URL = 'https://api.bale.ai/bot'
+const BALE_API_URL = 'https://tapi.bale.ai/bot'
 
 export interface BaleApiOptions {
     token: string
@@ -14,19 +14,31 @@ export class BaleApi {
         if (!options.token) throw new Error('Bale API token is required')
     }
 
-    private getUrl(method: string) {
-        return `${BALE_API_URL}${this.options.token}/${method}`
+    private getUrl(requestURL: string) {
+        return `${BALE_API_URL}${this.options.token}/${requestURL}`
     }
 
-    private async request(method: string, payload: any = {}) {
-        const url = this.getUrl(method)
-        const res = await fetch(url, {
-            method: 'POST',
+    private async request(method: "GET" | "POST", requestURL: string, payload: any = {}) {
+        let url = this.getUrl(requestURL)
+
+        const options: RequestInit = {
+            method,
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
-        })
+        }
+
+        if (method === 'GET') {
+            const params = new URLSearchParams(payload as Record<string, string>)
+            const query = params.toString()
+            if (query) {
+                url += `?${query}`
+            }
+        } else {
+            options.body = JSON.stringify(payload)
+        }
+
+        const res = await fetch(url, options)
 
         if (!res.ok) {
             const text = await res.text()
@@ -39,12 +51,12 @@ export class BaleApi {
     async getUpdates(offset?: number, limit = 50, timeout = 30) {
         const payload: any = { limit, timeout }
         if (offset !== undefined) payload.offset = offset
-        const body = await this.request('getUpdates', payload) as BaleUpdatesResponse
+        const body = await this.request('GET', 'getUpdates', payload) as BaleUpdatesResponse
         return body.result ?? []
     }
 
     async sendMessage(chatId: string | number, text: string) {
-        return this.request('sendMessage', {
+        return this.request('POST', 'sendMessage', {
             chat_id: chatId,
             text,
         })
