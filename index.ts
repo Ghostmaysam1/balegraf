@@ -8,7 +8,6 @@ export class Balegraf {
 
     constructor(token: string) {
         this.engine = new Core(token);
-        this.engine.use(this.router.middleware);
     }
 
     command(name: string, handler: (ctx: Context) => Promise<void>) {
@@ -27,6 +26,7 @@ export class Balegraf {
     }
 
     async launch(options?: any) {
+        this.engine.use(this.router.middleware);
         this.engine.startPolling(options)
     }
 }
