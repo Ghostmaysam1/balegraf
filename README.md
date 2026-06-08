@@ -1,4 +1,4 @@
-# mardomvasl-bale
+# Baler
 
 Telegraf-like minimal framework scaffold for Bale messenger.
 
@@ -17,37 +17,13 @@ Telegraf-like minimal framework scaffold for Bale messenger.
 npm install
 ```
 
-## اجرای مثال ساده
-
-```bash
-npm run example
-```
-
-## اجرای polling واقعی
-
-```bash
-export BALE_TOKEN=your-token-here
-npm run dev
-```
-
-## ساخت نهایی
-
-```bash
-npm run build
-```
-
-## تست
-
-```bash
-npm test
-```
 
 ## نمونه کد
 
 ```ts
-import { BaleBot } from "./src/framework";
+import { Baler } from "baler";
 
-const bot = new BaleBot({ token: process.env.BALE_TOKEN });
+const bot = new Baler(process.env.BALE_TOKEN);
 
 bot.use(async (ctx, next) => {
   console.log("update", ctx.update);
@@ -62,10 +38,6 @@ bot.hears(/سلام|hello/i, async (ctx) => {
   await ctx.reply("سلام!");
 });
 
-bot.on("message", async (ctx) => {
-  console.log("received message");
-});
-
 bot.launch();
 ```
 
@@ -76,5 +48,3 @@ bot.launch();
 ## توضیحات
 
 - `bot.launch()` polling بله را شروع می‌کند.
-- `ctx.reply(text)` به `sendMessage` بله ترجمه می‌شود.
-- اگر بخواهید webhook اضافه کنیم، بعداً می‌توان `launch()` را توسعه داد.
