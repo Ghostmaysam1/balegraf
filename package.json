@@ -1,6 +1,6 @@
 {
-    "name": "baler",
-    "version": "0.2.10",
+    "name": "@balegraf/balegraf",
+    "version": "0.2.9",
     "description": "create Bale bots with a Telegraf-like framework for Bale messenger",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -12,19 +12,19 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Ghostmaysam1/baler.git"
+        "url": "git+https://github.com/Ghostmaysam1/balegraf.git"
     },
-    "homepage": "https://github.com/Ghostmaysam1/baler",
+    "homepage": "https://github.com/Ghostmaysam1/balegraf",
     "bugs": {
-        "url": "https://github.com/Ghostmaysam1/baler/issues"
+        "url": "https://github.com/Ghostmaysam1/balegraf/issues"
     },
     "author": "Meysam Asefi Najafi",
     "keywords": [
         "bale",
-        "baler",
         "bot",
         "bale-api",
         "bale-bot-api",
+        "balegraf",
         "bale-bot",
         "bale_bot"
     ],

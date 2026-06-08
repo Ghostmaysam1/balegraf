@@ -1,4 +1,4 @@
-# Baler
+# balegraf
 
 Telegraf-like minimal framework scaffold for Bale messenger.
 
