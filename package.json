@@ -1,5 +1,5 @@
 {
-    "name": "balegraf",
+    "name": "@balegraf/balegraf",
     "version": "0.2.5",
     "description": "create Bale bots with a Telegraf-like framework for Bale messenger",
     "main": "dist/index.js",
