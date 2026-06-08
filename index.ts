@@ -1,6 +1,7 @@
 import { Core } from './src/core/core'
 import { Context, Middleware } from './src/core/types';
 import { createRouter } from './src/router/router'
+import { PollingOptions } from './src/types'
 
 export class Balegraf {
     private engine: Core
@@ -25,8 +26,8 @@ export class Balegraf {
         return this
     }
 
-    async launch(options?: any) {
+    async launch(options?: PollingOptions) {
         this.engine.use(this.router.middleware);
-        this.engine.startPolling(options)
+        this.engine.startPolling(options ?? {});
     }
 }

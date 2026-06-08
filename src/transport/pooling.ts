@@ -1,6 +1,7 @@
 import { BaleApi } from '../api/Bale'
 import { Core } from '../core/core'
-import { Update } from '../core/types'
+import { Update } from '../types'
+import { PollingOptions } from '../types'
 
 export class Polling {
     private offset = 0
@@ -11,7 +12,7 @@ export class Polling {
         private api: BaleApi
     ) { }
 
-    async start(options: any = {}) {
+    async start(options: PollingOptions = {}) {
         this.running = true
 
         const interval = options.intervalMs ?? 1000

@@ -1,21 +1,16 @@
 const BALE_API_URL = 'https://tapi.bale.ai/bot'
+import { BaleApiOptions, BaleUpdatesResponse } from './types'
 
-export interface BaleApiOptions {
-    token: string
-}
 
-export interface BaleUpdatesResponse {
-    ok: boolean
-    result: any[]
-}
 
 export class BaleApi {
     constructor(private options: BaleApiOptions) {
         if (!options.token) throw new Error('Bale API token is required')
     }
 
-    private getUrl(requestURL: string) {
-        return `${BALE_API_URL}${this.options.token}/${requestURL}`
+    private getUrl(requestURL: string): string {
+        const url = new URL(`${this.options.token}/${requestURL}`, BALE_API_URL).href;
+        return url;
     }
 
     private async request(method: "GET" | "POST", requestURL: string, payload: any = {}) {

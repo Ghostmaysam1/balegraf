@@ -3,6 +3,7 @@ import { Context } from './context'
 import { Middleware, Update } from './types'
 import { BaleApi } from '../api/Bale'
 import { Polling } from '../transport/pooling'
+import { PollingOptions } from '../types'
 
 export class Core {
     api: BaleApi
@@ -29,7 +30,7 @@ export class Core {
         await pipeline(ctx)
     }
 
-    async startPolling(options: any) {
+    async startPolling(options: PollingOptions) {
         await this.polling.start(options);
     }
 }
