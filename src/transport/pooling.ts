@@ -1,7 +1,6 @@
 import { BaleApi } from '../api/Bale'
 import { Core } from '../core/core'
-import { Update } from '../types'
-import { PollingOptions } from '../types'
+import { PollingOptions, Update } from '../types'
 
 export class Polling {
     private offset = 0

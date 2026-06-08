@@ -61,7 +61,7 @@ interface Message {
     reply_markup?: InlineKeyboardButton
 }
 
-interface User {
+export interface User {
     id?: number,
     is_bot: boolean,
     first_name: string,
@@ -70,7 +70,7 @@ interface User {
     language_code?: string
 }
 
-interface Chat {
+export interface Chat {
     id: number,
     type: "private" | "group" | "channel",
     title?: string,
@@ -79,13 +79,13 @@ interface Chat {
     last_name?: string
 }
 
-interface MessageEntity {
+export interface MessageEntity {
     type: "mention" | "bot_command",
     offset: number,
     length: number
 }
 
-interface Document {
+export interface Document {
     file_id: string,
     file_unique_id?: string,
     thumbnail?: PhotoSize,
@@ -94,7 +94,7 @@ interface Document {
     file_size?: number
 }
 
-interface Animation {
+export interface Animation {
     file_id: string,
     file_unique_id: string,
     width: string,
@@ -106,7 +106,7 @@ interface Animation {
     file_size?: number
 }
 
-interface Video {
+export interface Video {
     file_id: string,
     file_unique_id: string,
     width: string,
@@ -117,12 +117,12 @@ interface Video {
     file_size?: number
 }
 
-interface Voice {
+export interface Voice {
     file_id: string,
     file_unique_id: string
 }
 
-interface Sticker {
+export interface Sticker {
     file_id: string,
     file_unique_id: string,
     type: "regular" | "mask",
@@ -131,7 +131,7 @@ interface Sticker {
     file_size?: number
 }
 
-interface Audio {
+export interface Audio {
     file_id: string,
     file_unique_id: string,
     duration: number,
@@ -141,7 +141,7 @@ interface Audio {
     file_size?: number
 }
 
-interface PhotoSize {
+export interface PhotoSize {
     file_id: string,
     file_unique_id: string,
     width: number,
@@ -149,25 +149,25 @@ interface PhotoSize {
     file_size?: number
 }
 
-interface Contact {
+export interface Contact {
     phone_number: string,
     first_name: string,
     last_name?: string,
     user_id?: number
 }
 
-interface Location {
+export interface Location {
     longitude: number,
     latitude: number
 }
 
-interface Invoice {
+export interface Invoice {
     title: string,
     description: string,
     total_amount: number
 }
 
-interface SuccessfulPayment {
+export interface SuccessfulPayment {
     currency: string,
     total_amount: number,
     invoice_payload: string,
@@ -175,22 +175,31 @@ interface SuccessfulPayment {
     provider_payment_charge_id: string
 }
 
-interface WebAppData {
+export interface WebAppData {
     data: string
 }
 
-interface WebAppInfo {
+export interface WebAppInfo {
     url: string
 }
 
-interface InlineKeyboardButton {
-    text: string,
-    url?: string,
-    callback_data?: string,
-    web_app?: WebAppInfo,
-    copy_text?: CopyTextButton
+type InlineKeyboardButtonAction =
+    | { url: string }
+    | { callback_data: string }
+    | { web_app: WebAppInfo }
+    | { copy_text: CopyTextButton }
+
+export type InlineKeyboardButton = {
+    text: string
+} & InlineKeyboardButtonAction
+
+export interface CopyTextButton {
+    text: string
 }
 
-interface CopyTextButton {
+export interface KeyboardButton {
     text: string
+    request_contact?: boolean
+    request_location?: boolean
+    web_app?: WebAppInfo
 }

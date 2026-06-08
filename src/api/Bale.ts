@@ -1,4 +1,5 @@
 const BALE_API_URL = 'https://tapi.bale.ai/bot'
+import { Markup } from '../markup/Markup';
 import { BaleApiOptions, BaleUpdatesResponse } from './types'
 
 
@@ -36,6 +37,7 @@ export class BaleApi {
         const res = await fetch(url, options)
 
         if (!res.ok) {
+            console.log('Bale API request failed:', JSON.stringify({ method, url, payload, status: res.status, statusText: res.statusText }));
             const text = await res.text()
             throw new Error(`Bale API request failed: ${res.status} ${res.statusText} ${text}`)
         }
@@ -50,10 +52,12 @@ export class BaleApi {
         return body.result ?? []
     }
 
-    async sendMessage(chatId: string | number, text: string) {
+    async sendMessage(chatId: string | number, text: string, markup?: Markup
+    ) {
         return this.request('POST', 'sendMessage', {
             chat_id: chatId,
             text,
+            reply_markup: markup || null
         })
     }
 }

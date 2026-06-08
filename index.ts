@@ -3,6 +3,8 @@ import { Context, Middleware } from './src/core/types';
 import { createRouter } from './src/router/router'
 import { PollingOptions } from './src/types'
 
+export { Markup } from './src/markup/Markup';
+
 export class Balegraf {
     private engine: Core
     private router = createRouter()

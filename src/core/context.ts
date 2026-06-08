@@ -1,5 +1,6 @@
 import { Core } from './core'
-import { Update } from './types'
+import { Update } from '../types'
+import { Markup } from '../markup/Markup'
 
 export class Context {
     update: Update
@@ -8,7 +9,7 @@ export class Context {
     message?: Update['message']
     callbackQuery?: Update['callback_query']
 
-    reply: (text: string) => Promise<void>
+    reply: (text: string, markup?: Markup) => Promise<void>
 
     constructor(update: Update, core: Core) {
         this.update = update
@@ -17,7 +18,7 @@ export class Context {
         this.message = update.message
         this.callbackQuery = update.callback_query
 
-        this.reply = async (text: string) => {
+        this.reply = async (text: string, markup?: Markup) => {
             if (!this.core.api) throw new Error('API not initialized')
 
             const chatId =
@@ -28,7 +29,7 @@ export class Context {
                 throw new Error('Cannot resolve chat id')
             }
 
-            return this.core.api.sendMessage(chatId, text)
+            return this.core.api.sendMessage(chatId, text, markup)
         }
     }
 }
