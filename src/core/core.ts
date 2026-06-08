@@ -1,7 +1,7 @@
 import { compose } from './compose'
 import { Context } from './context'
 import { Middleware, Update } from './types'
-import { BaleApi } from '../api/BaleApi'
+import { BaleApi } from '../api/Bale'
 import { Polling } from '../transport/pooling'
 
 export class Core {

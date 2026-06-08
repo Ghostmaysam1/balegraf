@@ -1,4 +1,4 @@
-import { BaleApi } from '../api/BaleApi'
+import { BaleApi } from '../api/Bale'
 import { Core } from '../core/core'
 import { Update } from '../core/types'
 
