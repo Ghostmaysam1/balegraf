@@ -21,9 +21,9 @@ npm install
 ## نمونه کد
 
 ```ts
-import { Baler } from "baler";
+import { Balegraf } from "@balegraf/balegraf";
 
-const bot = new Baler(process.env.BALE_TOKEN);
+const bot = new Balegraf(process.env.BALE_TOKEN);
 
 bot.use(async (ctx, next) => {
   console.log("update", ctx.update);
