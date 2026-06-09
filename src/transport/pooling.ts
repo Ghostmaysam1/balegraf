@@ -14,22 +14,28 @@ export class Polling {
     async start(options: PollingOptions = {}) {
         this.running = true
 
-        const interval = options.intervalMs ?? 1000
         const limit = options.limit ?? 50
         const timeout = options.timeout ?? 20
 
         while (this.running) {
+
             try {
-                const updates: Update[] =
-                    await this.api.getUpdates(this.offset, limit, timeout)
+                const updates: Update[] = await this.api.getUpdates(this.offset, limit, timeout)
+                if(updates.length == 0) continue;
 
                 for (const update of updates) {
-                    await this.bot.handleUpdate(update)
+                    try {
+                        await this.bot.handleUpdate(update)
+                    } catch (err) {
+                        console.error(err)
+                    }
+
                     this.offset = update.update_id + 1
                 }
+
             } catch (err) {
                 console.error(err)
-                await new Promise(r => setTimeout(r, interval))
+                await sleep(500);
             }
         }
     }
@@ -37,4 +43,8 @@ export class Polling {
     stop() {
         this.running = false
     }
+}
+
+async function sleep(ms: number): Promise<void> {
+    await new Promise(r => setInterval(r, ms));
 }

@@ -1,5 +1,4 @@
 export type PollingOptions = {
-    intervalMs?: number
     limit?: number
     timeout?: number
 }

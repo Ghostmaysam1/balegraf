@@ -35,17 +35,10 @@ export class BaleApi {
         }
 
         const res = await fetch(url, options)
-
-        if (!res.ok) {
-            console.log('Bale API request failed:', JSON.stringify({ method, url, payload, status: res.status, statusText: res.statusText }));
-            const text = await res.text()
-            throw new Error(`Bale API request failed: ${res.status} ${res.statusText} ${text}`)
-        }
-
         return res.json()
     }
 
-    async getUpdates(offset?: number, limit = 50, timeout = 30) {
+    async getUpdates(offset?: number, limit = 100, timeout = 5) {
         const payload: any = { limit, timeout }
         if (offset !== undefined) payload.offset = offset
         const body = await this.request('GET', 'getUpdates', payload) as BaleUpdatesResponse
