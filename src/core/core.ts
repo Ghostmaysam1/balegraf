@@ -1,13 +1,13 @@
 import { compose } from './compose'
-import { Context } from './context'
+import { Context } from '../context/context'
 import { Middleware } from './types'
 import { BaleApi } from '../api/Bale'
 import { Polling } from '../transport/pooling'
 import { PollingOptions, Update } from '../types'
 
 export class Core {
-    api: BaleApi
-    polling: Polling
+    readonly api: BaleApi
+    readonly polling: Polling
     private middlewares: Middleware[] = []
 
     constructor(token: string) {

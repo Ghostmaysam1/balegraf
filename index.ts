@@ -1,6 +1,7 @@
 import { Core } from './src/core/core'
-import { Context, Middleware } from './src/core/types';
+import { Middleware } from './src/core/types';
 import { createRouter } from './src/router/router'
+import { Handler, UpdateTypes } from './src/router/types';
 import { PollingOptions } from './src/types'
 
 export { Markup } from './src/markup/Markup';
@@ -13,13 +14,18 @@ export class Balegraf {
         this.engine = new Core(token);
     }
 
-    command(name: string, handler: (ctx: Context) => Promise<void>) {
+    command(name: string, handler: Handler) {
         this.router.command(name, handler)
         return this
     }
 
-    hears(pattern: string | RegExp, handler: (ctx: Context) => Promise<void>) {
+    hears(pattern: string | RegExp, handler: Handler) {
         this.router.hears(pattern, handler)
+        return this
+    }
+
+    on(event: UpdateTypes, handler: Handler) {
+        this.router.on(event, handler)
         return this
     }
 

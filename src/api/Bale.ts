@@ -52,12 +52,20 @@ export class BaleApi {
         return body.result ?? []
     }
 
-    async sendMessage(chatId: string | number, text: string, markup?: Markup
+    sendMessage(chatId: string | number, text: string, markup?: Markup
     ) {
         return this.request('POST', 'sendMessage', {
             chat_id: chatId,
             text,
             reply_markup: markup || null
+        })
+    }
+
+    answerCallbackQuery(callbackQueryId: string, text?: string, showAlert?: boolean) {
+        return this.request('POST', 'answerCallbackQuery', {
+            callback_query_id: callbackQueryId,
+            text,
+            show_alert: showAlert
         })
     }
 }

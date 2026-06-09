@@ -13,3 +13,5 @@ export interface InlineKeyboardMarkup {
 export interface ReplyKeyboardRemove {
     remove_keyboard: true
 }
+
+export type ReplyMarkup = ReplyKeyboardMarkup | InlineKeyboardMarkup | ReplyKeyboardRemove
