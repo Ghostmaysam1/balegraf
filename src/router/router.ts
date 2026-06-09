@@ -1,11 +1,12 @@
 import type { Middleware } from '../core/types'
 import type { Router, Handler, UpdateTypes } from './types'
-import {resolveUpdateType} from '../shared/resolveUpdateType'
+import { resolveUpdateType } from '../shared/resolveUpdateType'
 
 export function createRouter(): Router {
     const commands = new Map<string, Handler[]>()
     const hearsList: Array<{ pattern: RegExp | string; fn: Handler }> = []
     const events = new Map<UpdateTypes, Handler[]>()
+    const actions: Array<{ pattern: string | RegExp, fn: Handler }> = []
 
     const middleware: Middleware = async (ctx, next) => {
 
@@ -45,6 +46,25 @@ export function createRouter(): Router {
             }
         }
         if (update_type === "callback_query") {
+
+            const data = ctx.callbackData || ''
+
+            // ACTIONS
+
+            for (const action of actions) {
+                if (action.pattern instanceof RegExp) {
+                    if (action.pattern.test(data)) {
+                        await action.fn(ctx)
+                    }
+                } else {
+                    if (action.pattern === data) {
+                        await action.fn(ctx)
+                    }
+                }
+            }
+
+            // EVENTS
+            
             const callbackEvents = events.get('callback_query')
             if (callbackEvents) {
                 for (const fn of callbackEvents) await fn(ctx)
@@ -81,6 +101,9 @@ export function createRouter(): Router {
             const list = events.get(event) ?? []
             list.push(fn)
             events.set(event, list)
+        },
+        action(pattern, fn) {
+            actions.push({ pattern, fn })
         }
     }
 }

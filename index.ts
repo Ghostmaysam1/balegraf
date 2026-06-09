@@ -1,7 +1,7 @@
 import { Core } from './src/core/core'
 import { Middleware } from './src/core/types';
 import { createRouter } from './src/router/router'
-import { Handler, UpdateTypes } from './src/router/types';
+import { ActionPattern, Handler, HearsPattern, UpdateTypes } from './src/router/types';
 import { PollingOptions } from './src/types'
 
 export { Markup } from './src/markup/Markup';
@@ -19,7 +19,7 @@ export class Balegraf {
         return this
     }
 
-    hears(pattern: string | RegExp, handler: Handler) {
+    hears(pattern: HearsPattern, handler: Handler) {
         this.router.hears(pattern, handler)
         return this
     }
@@ -31,6 +31,11 @@ export class Balegraf {
 
     use(mw: Middleware) {
         this.engine.use(mw)
+        return this
+    }
+
+    action(pattern: ActionPattern, handler: Handler) {
+        this.router.action(pattern, handler);
         return this
     }
 
