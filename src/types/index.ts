@@ -26,7 +26,7 @@ interface CallbackQuery {
     data?: string
 }
 
-interface Message {
+export interface Message {
     message_id: number,
     from?: User,
     date: number,
