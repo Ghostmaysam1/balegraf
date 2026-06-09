@@ -1,60 +1,166 @@
-# balegraf
+# Balegraf
 
-Telegraf-like minimal framework scaffold for Bale messenger.
+A lightweight Telegraf-inspired framework for building Bale Messenger bots with Node.js and TypeScript.
 
 ## Features
 
-- Middleware pipeline با `bot.use`
-- هندلر `command(name, handler)` برای دستورها
-- هندلر `hears(pattern, handler)` برای تشخیص متن یا Regex
-- هندلر عمومی `on('message', handler)` و `on('callback_query', handler)`
-- اجرای polling ساده با `bot.launch()`
-- ارسال پیام از طریق `ctx.reply(text)`
+- Middleware system (`bot.use`)
+- Command handlers (`bot.command`)
+- Text matching (`bot.hears`)
+- Callback query handlers (`bot.action`)
+- Event handlers (`bot.on`)
+- Reply and inline keyboards
+- Callback query support
+- TypeScript support
+- Long polling updates
+- Familiar Telegraf-style API
 
-## نصب
+## Installation
 
 ```bash
-npm install
+npm install @balegraf/balegraf
 ```
 
+## Quick Start
 
-## نمونه کد
+```ts
+import { Balegraf } from "@balegraf/balegraf";
 
-```js
-const { Balegraf, Markup } = require("@balegraf/balegraf");
-
-const bot = new Balegraf(process.env.BALE_TOKEN);
-
-bot.use(async (ctx, next) => {
-    console.log("update", ctx.update);
-    await next();
-});
+const bot = new Balegraf(process.env.BALE_TOKEN!);
 
 bot.command("start", async (ctx) => {
-    await ctx.reply("سلام!", Markup.inlineKeyboard(
+  await ctx.reply(
+    "Choose an option",
+    Markup.inlineKeyboard(
         [
-            [Markup.button.callback("دکمه 1", "button1")],
-            [Markup.button.callback("دکمه 2", "button2")]
+            [Markup.button.callback("Click Me", "click_me")]
         ]
-    ));
+    ),
+  );
 });
 
-bot.on("callback_query", async (ctx) => {
-    await ctx.answerCallbackQuery();
-    await ctx.reply(`شما دکمه ${ctx.callbackData} را زدید!`);
-})
+bot.action("click_me", async (ctx) => {
+  await ctx.answerCallbackQuery();
 
-bot.hears(/سلام|hello/i, async (ctx) => {
-    await ctx.reply("سلام!");
+  await ctx.reply("Button clicked!");
 });
 
 bot.launch();
 ```
 
-## نیازمندی
+## Middleware
 
-- Node.js 18 یا بالاتر
+```ts
+bot.use(async (ctx, next) => {
+  console.log(ctx.update);
+  await next();
+});
+```
 
-## توضیحات
+## Commands
 
-- `bot.launch()` polling بله را شروع می‌کند.
+```ts
+bot.command("start", async (ctx) => {
+  await ctx.reply("Welcome!");
+});
+```
+
+## Text Matching
+
+```ts
+bot.hears(/hello|سلام/i, async (ctx) => {
+  await ctx.reply("Hi!");
+});
+```
+
+## Actions
+
+Handle inline keyboard callbacks easily.
+
+```ts
+bot.action("like", async (ctx) => {
+  await ctx.answerCallbackQuery("Liked!");
+});
+
+bot.action("delete", async (ctx) => {
+  await ctx.answerCallbackQuery("Deleted!");
+});
+```
+
+### Regex Actions
+
+```ts
+bot.action(/^user:\d+$/, async (ctx) => {
+  console.log(ctx.callbackData);
+});
+```
+
+## Inline Keyboard
+
+```ts
+import { Markup } from "@balegraf/balegraf";
+
+bot.command("start", async (ctx) => {
+  await ctx.reply(
+    "Choose an option",
+    Markup.inlineKeyboard([[Markup.button.callback("Click Me", "click_me")]]),
+  );
+});
+```
+
+## Callback Queries
+
+```ts
+bot.on("callback_query", async (ctx) => {
+  await ctx.answerCallbackQuery();
+
+  await ctx.reply(`Clicked: ${ctx.callbackData}`);
+});
+```
+
+## Reply Keyboard
+
+```ts
+await ctx.reply(
+  "Select an option",
+  Markup.keyboard([["Profile"], ["Settings"]]),
+);
+```
+
+## Remove Keyboard
+
+```ts
+await ctx.reply("Keyboard removed", Markup.removeKeyboard());
+```
+
+## Context
+
+Available properties:
+
+```ts
+ctx.update;
+ctx.updateType;
+
+ctx.message;
+ctx.callbackQuery;
+
+ctx.callbackData;
+
+ctx.user;
+ctx.chat;
+```
+
+Available methods:
+
+```ts
+ctx.reply(...)
+ctx.answerCallbackQuery(...)
+```
+
+## Requirements
+
+- Node.js 18+
+
+## License
+
+MIT
