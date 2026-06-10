@@ -4,16 +4,24 @@ A lightweight Telegraf-inspired framework for building Bale Messenger bots with 
 
 ## Features
 
-- Middleware system (`bot.use`)
-- Command handlers (`bot.command`)
-- Text matching (`bot.hears`)
-- Callback query handlers (`bot.action`)
-- Event handlers (`bot.on`)
-- Reply and inline keyboards
-- Callback query support
-- TypeScript support
-- Long polling updates
-- Familiar Telegraf-style API
+* Telegraf-style API
+* Middleware system (`bot.use`)
+* Command handlers (`bot.command`)
+* Text matching (`bot.hears`)
+* Callback query handlers (`bot.action`)
+* Event handlers (`bot.on`)
+* Inline keyboards
+* Reply keyboards
+* Keyboard removal
+* Callback query support
+* Context-based API
+* Photo sending support
+* File upload support
+* TypeScript support
+* Long polling updates
+* Lightweight and dependency-free core
+
+---
 
 ## Installation
 
@@ -21,21 +29,21 @@ A lightweight Telegraf-inspired framework for building Bale Messenger bots with 
 npm install @balegraf/balegraf
 ```
 
+---
+
 ## Quick Start
 
 ```ts
-import { Balegraf } from "@balegraf/balegraf";
+import { Balegraf, Markup } from "@balegraf/balegraf";
 
 const bot = new Balegraf(process.env.BALE_TOKEN!);
 
 bot.command("start", async (ctx) => {
   await ctx.reply(
     "Choose an option",
-    Markup.inlineKeyboard(
-        [
-            [Markup.button.callback("Click Me", "click_me")]
-        ]
-    ),
+    Markup.inlineKeyboard([
+      [Markup.button.callback("Click Me", "click_me")]
+    ])
   );
 });
 
@@ -48,14 +56,19 @@ bot.action("click_me", async (ctx) => {
 bot.launch();
 ```
 
+---
+
 ## Middleware
 
 ```ts
 bot.use(async (ctx, next) => {
   console.log(ctx.update);
+
   await next();
 });
 ```
+
+---
 
 ## Commands
 
@@ -65,7 +78,27 @@ bot.command("start", async (ctx) => {
 });
 ```
 
+Multiple commands:
+
+```ts
+bot.command(["start", "help"], async (ctx) => {
+  await ctx.reply("Available commands...");
+});
+```
+
+---
+
 ## Text Matching
+
+String matching:
+
+```ts
+bot.hears("hello", async (ctx) => {
+  await ctx.reply("Hi!");
+});
+```
+
+Regex matching:
 
 ```ts
 bot.hears(/hello|سلام/i, async (ctx) => {
@@ -73,9 +106,11 @@ bot.hears(/hello|سلام/i, async (ctx) => {
 });
 ```
 
+---
+
 ## Actions
 
-Handle inline keyboard callbacks easily.
+Handle callback queries from inline keyboards.
 
 ```ts
 bot.action("like", async (ctx) => {
@@ -87,7 +122,7 @@ bot.action("delete", async (ctx) => {
 });
 ```
 
-### Regex Actions
+Regex actions:
 
 ```ts
 bot.action(/^user:\d+$/, async (ctx) => {
@@ -95,71 +130,202 @@ bot.action(/^user:\d+$/, async (ctx) => {
 });
 ```
 
+---
+
+## Event Handlers
+
+```ts
+bot.on("message", async (ctx) => {
+  console.log(ctx.message);
+});
+```
+
+```ts
+bot.on("callback_query", async (ctx) => {
+  console.log(ctx.callbackQuery);
+});
+```
+
+---
+
 ## Inline Keyboard
 
 ```ts
 import { Markup } from "@balegraf/balegraf";
 
-bot.command("start", async (ctx) => {
-  await ctx.reply(
-    "Choose an option",
-    Markup.inlineKeyboard([[Markup.button.callback("Click Me", "click_me")]]),
-  );
-});
+await ctx.reply(
+  "Choose an option",
+  Markup.inlineKeyboard([
+    [
+      Markup.button.callback(
+        "Click Me",
+        "click_me"
+      )
+    ]
+  ])
+);
 ```
 
-## Callback Queries
-
-```ts
-bot.on("callback_query", async (ctx) => {
-  await ctx.answerCallbackQuery();
-
-  await ctx.reply(`Clicked: ${ctx.callbackData}`);
-});
-```
+---
 
 ## Reply Keyboard
 
 ```ts
 await ctx.reply(
-  "Select an option",
-  Markup.keyboard([["Profile"], ["Settings"]]),
+  "Choose an option",
+  Markup.keyboard([
+    ["Profile"],
+    ["Settings"]
+  ])
 );
 ```
+
+---
 
 ## Remove Keyboard
 
 ```ts
-await ctx.reply("Keyboard removed", Markup.removeKeyboard());
+await ctx.reply(
+  "Keyboard removed",
+  Markup.removeKeyboard()
+);
 ```
+
+---
+
+## Sending Photos
+
+Using a local file:
+
+```ts
+import { InputFile } from "@balegraf/balegraf";
+
+await ctx.replyWithPhoto(
+  InputFile.fromPath("./photo.jpg")
+);
+```
+
+With caption:
+
+```ts
+await ctx.replyWithPhoto(
+  InputFile.fromPath("./photo.jpg"),
+  {
+    caption: "Example photo"
+  }
+);
+```
+
+With inline keyboard:
+
+```ts
+await ctx.replyWithPhoto(
+  InputFile.fromPath("./photo.jpg"),
+  {
+    caption: "Choose an option",
+    replyMarkup: Markup.inlineKeyboard([
+      [
+        Markup.button.callback(
+          "Like",
+          "like"
+        )
+      ]
+    ])
+  }
+);
+```
+
+---
+
+## InputFile
+
+Create files from different sources.
+
+### Local File
+
+```ts
+InputFile.fromPath("./photo.jpg");
+```
+
+### File ID
+
+```ts
+InputFile.fromFileId(fileId);
+```
+
+### URL
+
+```ts
+InputFile.fromUrl(
+  "https://example.com/photo.jpg"
+);
+```
+
+### Buffer
+
+```ts
+InputFile.fromBuffer(
+  buffer,
+  "photo.jpg"
+);
+```
+
+### Stream
+
+```ts
+InputFile.fromStream(
+  stream,
+  "photo.jpg"
+);
+```
+
+---
 
 ## Context
 
-Available properties:
+### Properties
 
 ```ts
-ctx.update;
-ctx.updateType;
+ctx.update
+ctx.updateType
 
-ctx.message;
-ctx.callbackQuery;
+ctx.message
+ctx.callbackQuery
 
-ctx.callbackData;
+ctx.callbackData
 
-ctx.user;
-ctx.chat;
+ctx.user
+ctx.chat
 ```
 
-Available methods:
+### Methods
 
 ```ts
 ctx.reply(...)
+ctx.replyWithPhoto(...)
 ctx.answerCallbackQuery(...)
 ```
 
+---
+
+## Update Types
+
+Supported update types:
+
+```ts
+message
+edited_message
+callback_query
+pre_checkout_query
+```
+
+---
+
 ## Requirements
 
-- Node.js 18+
+* Node.js 20+
+
+---
 
 ## License
 
