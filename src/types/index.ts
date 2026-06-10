@@ -1,3 +1,11 @@
+import type { ReplyMarkup } from '../markup/types'
+
+export interface MediaOptions {
+    caption?: string
+    replyMarkup?: ReplyMarkup
+    replyToMessageId?: number
+}
+
 export type PollingOptions = {
     limit?: number
     timeout?: number

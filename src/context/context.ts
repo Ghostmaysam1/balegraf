@@ -1,9 +1,10 @@
 import type { Core } from '../core/core'
-import type { Chat, Update, User, Message } from '../types'
+import type { Chat, Update, User, Message, MediaOptions } from '../types'
 import type { ReplyMarkup } from '../markup/types'
 import type { UpdateTypes } from '../router/types';
 
 import { resolveUpdateType } from '../shared/resolveUpdateType';
+import { InputFile } from '../types/inputFile';
 
 export class Context {
     readonly update: Update
@@ -50,6 +51,12 @@ export class Context {
         if (!this.chat?.id) throw new Error('Chat not found in update')
 
         return this.core.api.sendMessage(this.chat.id, text, markup)
+    }
+
+    replyWithPhoto(photo: InputFile, options?: MediaOptions) {
+        if (!this.chat?.id) throw new Error('Chat not found in update')
+
+        return this.core.api.sendPhoto(this.chat?.id, photo, options)
     }
 
     answerCallbackQuery(text?: string, showAlert?: boolean) {

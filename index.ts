@@ -5,6 +5,7 @@ import { ActionPattern, Handler, HearsPattern, UpdateTypes } from './src/router/
 import { PollingOptions } from './src/types'
 
 export { Markup } from './src/markup/Markup';
+export { InputFile } from './src/types/inputFile'
 
 export class Balegraf {
     private engine: Core
