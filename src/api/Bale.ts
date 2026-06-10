@@ -35,12 +35,51 @@ export class BaleApi {
         return body.result ?? []
     }
 
-    sendMessage(chatId: string | number, text: string, markup?: ReplyMarkup
+    sendMessage(chat_id: string | number, text: string, reply_markup?: ReplyMarkup
     ) {
         return this.callApi('sendMessage', {
-            chat_id: chatId,
+            chat_id,
             text,
-            reply_markup: markup || null
+            ...(reply_markup && {
+                reply_markup
+            })
+        })
+    }
+
+    editMessageText(chat_id: string | number, message_id: string | number, text: string, reply_markup?: ReplyMarkup) {
+        return this.callApi('editMessageText', {
+            chat_id,
+            message_id,
+            text,
+            ...(reply_markup && {
+                reply_markup
+            })
+        })
+    }
+
+    editMessageCaption(chat_id: string | number, message_id: string | number, caption: string, reply_markup?: ReplyMarkup) {
+        return this.callApi('editMessageCaption', {
+            chat_id,
+            message_id,
+            caption,
+            ...(reply_markup && {
+                reply_markup
+            })
+        })
+    }
+
+    editMessageReplyMarkup(chat_id: string | number, message_id: string | number, reply_markup: ReplyMarkup) {
+        return this.callApi('editMessageReplyMarkup', {
+            chat_id,
+            message_id,
+            reply_markup
+        })
+    }
+
+    deleteMessage(chat_id: string | number, message_id: string | number) {
+        return this.callApi('deleteMessage', {
+            chat_id,
+            message_id
         })
     }
 
@@ -51,8 +90,12 @@ export class BaleApi {
     ) {
         if (!photo.needsUpload) {
             const url_or_id = photo.source;
-            
-            return this.callApi("sendPhoto", { ...options, photo: url_or_id, chat_id: chatId })
+            let normalized_options = {
+                caption: options?.caption,
+                reply_markup: options?.replyMarkup,
+                reply_to_message_id: options?.replyToMessageId
+            }
+            return this.callApi("sendPhoto", { ...normalized_options, photo: url_or_id, chat_id: chatId })
         }
         else {
             const form = new FormData()
@@ -81,11 +124,11 @@ export class BaleApi {
         }
     }
 
-    answerCallbackQuery(callbackQueryId: string, text?: string, showAlert?: boolean) {
+    answerCallbackQuery(callback_query_id: string, text?: string, show_alert?: boolean) {
         return this.callApi('answerCallbackQuery', {
-            callback_query_id: callbackQueryId,
+            callback_query_id,
             text,
-            show_alert: showAlert
+            show_alert
         })
     }
 }

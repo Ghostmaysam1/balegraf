@@ -8,7 +8,7 @@ import { InputFile } from '../types/inputFile';
 
 export class Context {
     readonly update: Update
-    readonly core: Core
+    private core: Core
     readonly updateType: UpdateTypes | null
 
     readonly message?: Update['message']
@@ -57,6 +57,47 @@ export class Context {
         if (!this.chat?.id) throw new Error('Chat not found in update')
 
         return this.core.api.sendPhoto(this.chat?.id, photo, options)
+    }
+
+    editMessageText(text: string, markup?: ReplyMarkup) {
+        if (!this.chat?.id) throw new Error('Chat not found in update')
+
+        if (this.updateType == 'callback_query') {
+            return this.core.api.editMessageText(this.chat.id, this.callbackQuery?.message?.message_id!, text, markup)
+        } else if (this.updateType == 'message') {
+            return this.core.api.editMessageText(this.chat.id, this.message?.message_id!, text, markup)
+        }
+    }
+
+    editMessageCaption(caption: string, markup?: ReplyMarkup) {
+        if (!this.chat?.id) throw new Error('Chat not found in update')
+
+        if (this.updateType == 'callback_query') {
+            return this.core.api.editMessageCaption(this.chat.id, this.callbackQuery?.message?.message_id!, caption, markup)
+        } else if (this.updateType == 'message') {
+            return this.core.api.editMessageCaption(this.chat.id, this.message?.message_id!, caption, markup)
+        }
+    }
+
+    editMessageReplyMarkup(markup: ReplyMarkup) {
+        if (!this.chat?.id) throw new Error('Chat not found in update')
+
+        if (this.updateType == 'callback_query') {
+            return this.core.api.editMessageReplyMarkup(this.chat.id, this.callbackQuery?.message?.message_id!, markup)
+        } else if (this.updateType == 'message') {
+            return this.core.api.editMessageReplyMarkup(this.chat.id, this.message?.message_id!, markup)
+        }
+    }
+
+    deleteMessage() {
+        if (!this.chat?.id) throw new Error('Chat not found in update')
+
+        if (this.updateType == 'callback_query') {
+            return this.core.api.deleteMessage(this.chat.id, this.callbackQuery?.message?.message_id!)
+        } else if (this.updateType == 'message') {
+            return this.core.api.deleteMessage(this.chat.id, this.message?.message_id!)
+        }
+
     }
 
     answerCallbackQuery(text?: string, showAlert?: boolean) {

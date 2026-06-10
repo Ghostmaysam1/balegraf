@@ -1,3 +1,4 @@
+import { BaleApi } from './src/api/Bale';
 import { Core } from './src/core/core'
 import { Middleware } from './src/core/types';
 import { createRouter } from './src/router/router'
@@ -12,7 +13,11 @@ export class Balegraf {
     private router = createRouter()
 
     constructor(token: string) {
-        this.engine = new Core(token);
+        this.engine = new Core(token)
+    }
+
+    get api(): BaleApi {
+        return this.engine.api
     }
 
     command(name: string, handler: Handler) {
