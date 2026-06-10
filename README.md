@@ -78,13 +78,6 @@ bot.command("start", async (ctx) => {
 });
 ```
 
-Multiple commands:
-
-```ts
-bot.command(["start", "help"], async (ctx) => {
-  await ctx.reply("Available commands...");
-});
-```
 
 ---
 
@@ -274,7 +267,7 @@ InputFile.fromBuffer(
 
 ```ts
 InputFile.fromStream(
-  stream,
+  fs.createReadStream('./photo.jpg'),
   "photo.jpg"
 );
 ```
