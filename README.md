@@ -4,22 +4,25 @@ A lightweight Telegraf-inspired framework for building Bale Messenger bots with 
 
 ## Features
 
-* Telegraf-style API
-* Middleware system (`bot.use`)
-* Command handlers (`bot.command`)
-* Text matching (`bot.hears`)
-* Callback query handlers (`bot.action`)
-* Event handlers (`bot.on`)
-* Inline keyboards
-* Reply keyboards
-* Keyboard removal
-* Callback query support
-* Context-based API
-* Photo sending support
-* File upload support
-* TypeScript support
-* Long polling updates
-* Lightweight and dependency-free core
+## Features
+
+- Telegraf-style API
+- Middleware system (`bot.use`)
+- Command handlers (`bot.command`)
+- Text matching (`bot.hears`)
+- Callback query handlers (`bot.action`)
+- Event handlers (`bot.on`)
+- Inline keyboards
+- Reply keyboards
+- Keyboard removal
+- Callback query support
+- Message editing support
+- Message deletion support
+- Photo sending support
+- File upload support
+- TypeScript support
+- Long polling updates
+- Lightweight core
 
 ---
 
@@ -41,9 +44,7 @@ const bot = new Balegraf(process.env.BALE_TOKEN!);
 bot.command("start", async (ctx) => {
   await ctx.reply(
     "Choose an option",
-    Markup.inlineKeyboard([
-      [Markup.button.callback("Click Me", "click_me")]
-    ])
+    Markup.inlineKeyboard([[Markup.button.callback("Click Me", "click_me")]]),
   );
 });
 
@@ -54,6 +55,21 @@ bot.action("click_me", async (ctx) => {
 });
 
 bot.launch();
+```
+
+---
+
+## Editing Inline Messages
+
+```ts
+bot.action("edit", async (ctx) => {
+  await ctx.editMessageText(
+    "Message updated",
+    Markup.inlineKeyboard([[Markup.button.callback("Done", "done")]]),
+  );
+
+  await ctx.answerCallbackQuery();
+});
 ```
 
 ---
@@ -77,7 +93,6 @@ bot.command("start", async (ctx) => {
   await ctx.reply("Welcome!");
 });
 ```
-
 
 ---
 
@@ -148,14 +163,7 @@ import { Markup } from "@balegraf/balegraf";
 
 await ctx.reply(
   "Choose an option",
-  Markup.inlineKeyboard([
-    [
-      Markup.button.callback(
-        "Click Me",
-        "click_me"
-      )
-    ]
-  ])
+  Markup.inlineKeyboard([[Markup.button.callback("Click Me", "click_me")]]),
 );
 ```
 
@@ -166,10 +174,7 @@ await ctx.reply(
 ```ts
 await ctx.reply(
   "Choose an option",
-  Markup.keyboard([
-    ["Profile"],
-    ["Settings"]
-  ])
+  Markup.keyboard([["Profile"], ["Settings"]]),
 );
 ```
 
@@ -178,10 +183,7 @@ await ctx.reply(
 ## Remove Keyboard
 
 ```ts
-await ctx.reply(
-  "Keyboard removed",
-  Markup.removeKeyboard()
-);
+await ctx.reply("Keyboard removed", Markup.removeKeyboard());
 ```
 
 ---
@@ -193,39 +195,26 @@ Using a local file:
 ```ts
 import { InputFile } from "@balegraf/balegraf";
 
-await ctx.replyWithPhoto(
-  InputFile.fromPath("./photo.jpg")
-);
+await ctx.replyWithPhoto(InputFile.fromPath("./photo.jpg"));
 ```
 
 With caption:
 
 ```ts
-await ctx.replyWithPhoto(
-  InputFile.fromPath("./photo.jpg"),
-  {
-    caption: "Example photo"
-  }
-);
+await ctx.replyWithPhoto(InputFile.fromPath("./photo.jpg"), {
+  caption: "Example photo",
+});
 ```
 
 With inline keyboard:
 
 ```ts
-await ctx.replyWithPhoto(
-  InputFile.fromPath("./photo.jpg"),
-  {
-    caption: "Choose an option",
-    replyMarkup: Markup.inlineKeyboard([
-      [
-        Markup.button.callback(
-          "Like",
-          "like"
-        )
-      ]
-    ])
-  }
-);
+await ctx.replyWithPhoto(InputFile.fromPath("./photo.jpg"), {
+  caption: "Choose an option",
+  replyMarkup: Markup.inlineKeyboard([
+    [Markup.button.callback("Like", "like")],
+  ]),
+});
 ```
 
 ---
@@ -249,27 +238,63 @@ InputFile.fromFileId(fileId);
 ### URL
 
 ```ts
-InputFile.fromUrl(
-  "https://example.com/photo.jpg"
-);
+InputFile.fromUrl("https://example.com/photo.jpg");
 ```
 
 ### Buffer
 
 ```ts
-InputFile.fromBuffer(
-  buffer,
-  "photo.jpg"
-);
+InputFile.fromBuffer(buffer, "photo.jpg");
 ```
 
 ### Stream
 
 ```ts
-InputFile.fromStream(
-  fs.createReadStream('./photo.jpg'),
-  "photo.jpg"
+InputFile.fromStream(fs.createReadStream("./photo.jpg"), "photo.jpg");
+```
+
+---
+
+## Editing Messages
+
+### Edit Text
+
+```ts
+await ctx.editMessageText("Updated text");
+```
+
+With inline keyboard:
+
+```ts
+await ctx.editMessageText(
+  "Updated text",
+  Markup.inlineKeyboard([[Markup.button.callback("Refresh", "refresh")]]),
 );
+```
+
+### Edit Caption
+
+```ts
+await ctx.editMessageCaption(
+  "Updated caption",
+  ctx.callbackQuery.message.reply_markup,
+);
+```
+
+### Edit Reply Markup
+
+```ts
+await ctx.editMessageReplyMarkup(
+  Markup.inlineKeyboard([[Markup.button.callback("New Button", "new_button")]]),
+);
+```
+
+---
+
+## Deleting Messages
+
+```ts
+await ctx.deleteMessage();
 ```
 
 ---
@@ -279,16 +304,16 @@ InputFile.fromStream(
 ### Properties
 
 ```ts
-ctx.update
-ctx.updateType
+ctx.update;
+ctx.updateType;
 
-ctx.message
-ctx.callbackQuery
+ctx.message;
+ctx.callbackQuery;
 
-ctx.callbackData
+ctx.callbackData;
 
-ctx.user
-ctx.chat
+ctx.user;
+ctx.chat;
 ```
 
 ### Methods
@@ -296,7 +321,14 @@ ctx.chat
 ```ts
 ctx.reply(...)
 ctx.replyWithPhoto(...)
+
 ctx.answerCallbackQuery(...)
+
+ctx.editMessageText(...)
+ctx.editMessageCaption(...)
+ctx.editMessageReplyMarkup(...)
+
+ctx.deleteMessage()
 ```
 
 ---
@@ -306,17 +338,23 @@ ctx.answerCallbackQuery(...)
 Supported update types:
 
 ```ts
-message
-edited_message
-callback_query
-pre_checkout_query
+message;
+edited_message;
+callback_query;
+pre_checkout_query;
 ```
 
 ---
 
+> Note:
+> `editMessageText`, `editMessageCaption`,
+> `editMessageReplyMarkup`, and `deleteMessage`
+> operate on the current message associated with the
+> incoming update, similar to Telegraf.
+
 ## Requirements
 
-* Node.js 20+
+- Node.js 20+
 
 ---
 
