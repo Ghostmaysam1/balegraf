@@ -69,6 +69,14 @@ export class BaleApi {
                 form.append('caption', options.caption)
             }
 
+            if (options?.replyMarkup) {
+                form.append('reply_markup', JSON.stringify(options.replyMarkup, null, 2))
+            }
+
+            if (options?.replyToMessageId) {
+                form.append('reply_to_message_id', options.replyToMessageId)
+            }
+
             return this.callApi("sendPhoto", form)
         }
     }
