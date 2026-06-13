@@ -131,4 +131,13 @@ export class BaleApi {
             show_alert
         })
     }
+
+
+    answerPreCheckoutQuery(pre_checkout_query_id: string, ok: boolean, error_message?: string) {
+        return this.callApi('answerPreCheckoutQuery', {
+            pre_checkout_query_id,
+            ok,
+            error_message
+        })
+    }
 }

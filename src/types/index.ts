@@ -65,7 +65,7 @@ export interface Message {
     invoice?: Invoice,
     successful_payment?: SuccessfulPayment,
     web_app_data?: WebAppData,
-    reply_markup?: InlineKeyboardButton
+    reply_markup?: ReplyMarkup
 }
 
 export interface User {
@@ -195,10 +195,21 @@ type InlineKeyboardButtonAction =
     | { callback_data: string }
     | { web_app: WebAppInfo }
     | { copy_text: CopyTextButton }
+    | { request_contact: boolean }
+    | { request_location: boolean }
 
-export type InlineKeyboardButton = {
+export type TextButton = {
     text: string
-} & InlineKeyboardButtonAction
+}
+
+export type InlineKeyboardButton =
+    | TextButton
+    | (TextButton & { url: string })
+    | (TextButton & { callback_data: string })
+    | (TextButton & { web_app: WebAppInfo })
+    | (TextButton & { copy_text: CopyTextButton })
+    | (TextButton & { request_contact: boolean })
+    | (TextButton & { request_location: boolean })
 
 export interface CopyTextButton {
     text: string

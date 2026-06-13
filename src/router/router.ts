@@ -1,12 +1,18 @@
-import type { Middleware } from '../core/types'
-import type { Router, Handler, UpdateTypes } from './types'
+import type { Context, Middleware } from '../core/types'
+import type { EventContextMap, Router, Handler, UpdateTypes } from './types'
 import { resolveUpdateType } from '../shared/resolveUpdateType'
+import { CallbackQueryContext, MessageContext, PreCheckoutQueryContext } from '../context/context'
 
 export function createRouter(): Router {
-    const commands = new Map<string, Handler[]>()
-    const hearsList: Array<{ pattern: RegExp | string; fn: Handler }> = []
-    const events = new Map<UpdateTypes, Handler[]>()
-    const actions: Array<{ pattern: string | RegExp, fn: Handler }> = []
+    const commands = new Map<string, Handler<MessageContext>[]>()
+    const hearsList: Array<{ pattern: RegExp | string; fn: Handler<MessageContext> }> = []
+    const events: { [K in UpdateTypes]: Array<Handler<EventContextMap[K]>> } = {
+        message: [],
+        edited_message: [],
+        callback_query: [],
+        pre_checkout_query: []
+    }
+    const actions: Array<{ pattern: string | RegExp, fn: Handler<CallbackQueryContext> }> = []
 
     const middleware: Middleware = async (ctx, next) => {
 
@@ -17,7 +23,7 @@ export function createRouter(): Router {
         }
 
         if (update_type === "message") {
-            let text = ctx.message?.text || ''
+            let text = (ctx as MessageContext).message.text || ''
 
             // COMMANDS
             if (text.startsWith('/')) {
@@ -25,7 +31,7 @@ export function createRouter(): Router {
 
                 const list = commands.get(cmd)
                 if (list) {
-                    for (const fn of list) await fn(ctx)
+                    for (const fn of list) await fn(ctx as MessageContext)
                     return
                 }
             }
@@ -33,54 +39,46 @@ export function createRouter(): Router {
             // HEARS
             for (const h of hearsList) {
                 if (h.pattern instanceof RegExp) {
-                    if (h.pattern.test(text || '')) await h.fn(ctx)
+                    if (h.pattern.test(text || '')) await h.fn(ctx as MessageContext)
                 } else {
-                    if (text?.includes(h.pattern)) await h.fn(ctx)
+                    if (text?.includes(h.pattern)) await h.fn(ctx as MessageContext)
                 }
             }
 
             // EVENTS
-            const messageEvents = events.get('message')
-            if (messageEvents) {
-                for (const fn of messageEvents) await fn(ctx)
-            }
+            const messageEvents = events.message
+            for (const fn of messageEvents) await fn(ctx as MessageContext)
         }
         if (update_type === "callback_query") {
 
-            const data = ctx.callbackData || ''
+            const data = (ctx as CallbackQueryContext).callbackData
 
             // ACTIONS
 
             for (const action of actions) {
                 if (action.pattern instanceof RegExp) {
                     if (action.pattern.test(data)) {
-                        await action.fn(ctx)
+                        await action.fn(ctx as CallbackQueryContext)
                     }
                 } else {
                     if (action.pattern === data) {
-                        await action.fn(ctx)
+                        await action.fn(ctx as CallbackQueryContext)
                     }
                 }
             }
 
             // EVENTS
-            
-            const callbackEvents = events.get('callback_query')
-            if (callbackEvents) {
-                for (const fn of callbackEvents) await fn(ctx)
-            }
+
+            const callbackEvents = events.callback_query
+            for (const fn of callbackEvents) await fn(ctx as CallbackQueryContext)
         }
         if (update_type === "pre_checkout_query") {
-            const preCheckoutEvents = events.get('pre_checkout_query')
-            if (preCheckoutEvents) {
-                for (const fn of preCheckoutEvents) await fn(ctx)
-            }
+            const preCheckoutEvents = events.pre_checkout_query
+            for (const fn of preCheckoutEvents) await fn(ctx as PreCheckoutQueryContext)
         }
         if (update_type === "edited_message") {
-            const editedMessageEvents = events.get('edited_message')
-            if (editedMessageEvents) {
-                for (const fn of editedMessageEvents) await fn(ctx)
-            }
+            const editedMessageEvents = events.edited_message
+            for (const fn of editedMessageEvents) await fn(ctx as MessageContext)
         }
 
         await next()
@@ -97,10 +95,8 @@ export function createRouter(): Router {
             hearsList.push({ pattern, fn })
         },
         on(event, fn) {
-            // Implementation for handling different events
-            const list = events.get(event) ?? []
-            list.push(fn)
-            events.set(event, list)
+            const list = events[event] as Array<Handler<any>>
+            list.push(fn as any)
         },
         action(pattern, fn) {
             actions.push({ pattern, fn })

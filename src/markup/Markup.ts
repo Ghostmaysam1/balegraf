@@ -1,17 +1,21 @@
-import { InlineKeyboardButton, KeyboardButton } from '../types'
+import { InlineKeyboardButton, KeyboardButton, TextButton } from '../types'
 import { ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardMarkup } from './types'
 
 export class Markup {
     static keyboard(
-        keyboard: KeyboardButton[][]
+        keyboard: Array<Array<KeyboardButton | string>>
     ): ReplyKeyboardMarkup {
-        return { keyboard };
+        return {
+            keyboard: keyboard.map(row => row.map(item => typeof item === 'string' ? { text: item } : item))
+        };
     }
 
     static inlineKeyboard(
-        inline_keyboard: InlineKeyboardButton[][]
+        inline_keyboard: Array<Array<InlineKeyboardButton | TextButton | string>>
     ): InlineKeyboardMarkup {
-        return { inline_keyboard };
+        return {
+            inline_keyboard: inline_keyboard.map(row => row.map(item => typeof item === 'string' ? { text: item } : item))
+        };
     }
 
     static removeKeyboard(): ReplyKeyboardRemove {
@@ -21,18 +25,18 @@ export class Markup {
     }
 
     static button = {
-        text(text: string) {
+        text(text: string): TextButton {
             return { text };
         },
 
-        contact(text: string) {
+        contact(text: string): InlineKeyboardButton {
             return {
                 text,
                 request_contact: true,
             };
         },
 
-        location(text: string) {
+        location(text: string): InlineKeyboardButton {
             return {
                 text,
                 request_location: true,
@@ -43,6 +47,13 @@ export class Markup {
             return {
                 text,
                 url,
+            };
+        },
+
+        copy(text: string): InlineKeyboardButton {
+            return {
+                text,
+                copy_text: { text },
             };
         },
 

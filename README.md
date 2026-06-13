@@ -1,8 +1,24 @@
-# Balegraf
+<header>
 
-A lightweight Telegraf-inspired framework for building Bale Messenger bots with Node.js and TypeScript.
+<div align="center">
+<img src="docs/assets/logo.svg" alt="logo" height="90" align="center">
+<h1 align="center">balegraf.js</h1>
 
-## Features
+<p>Modern Bale Bot API framework for Node.js</p>
+
+<a href="https://github.com/Ghostmaysam1/balegraf">
+	<img src="https://img.shields.io/github/package-json/v/Ghostmaysam1/balegraf
+  " alt="Version" />
+</a>
+<a href="https://packagephobia.com/result?p=@balegraf/balegraf@0.9.2">
+	<img src="https://flat.badgen.net/packagephobia/install/@balegraf/balegraf@0.9.2" alt="install size" />
+</a>
+<a href="https://github.com/telegraf/telegraf">
+	<img src="https://img.shields.io/github/languages/top/Ghostmaysam1/balegraf?style=flat-square&logo=github" alt="GitHub top language" />
+</a>
+</div>
+
+</header>
 
 ## Features
 
@@ -150,9 +166,12 @@ bot.on("message", async (ctx) => {
 
 ```ts
 bot.on("callback_query", async (ctx) => {
-  console.log(ctx.callbackQuery);
+  await ctx.answerCallbackQuery("You clicked the button!", true);
+  await ctx.reply(JSON.stringify(ctx.callbackQuery));
 });
 ```
+
+> `bot.on('callback_query', ...)` now receives a `CallbackQueryContext`, so `ctx.answerCallbackQuery()` is available directly.
 
 ---
 
@@ -163,9 +182,14 @@ import { Markup } from "@balegraf/balegraf";
 
 await ctx.reply(
   "Choose an option",
-  Markup.inlineKeyboard([[Markup.button.callback("Click Me", "click_me")]]),
+  Markup.inlineKeyboard([
+    [Markup.button.callback("Click Me", "click_me")],
+    [Markup.button.text("Just a Button")],
+  ]),
 );
 ```
+
+> `Markup.inlineKeyboard` now accepts plain text buttons via `Markup.button.text()`.
 
 ---
 
@@ -174,9 +198,11 @@ await ctx.reply(
 ```ts
 await ctx.reply(
   "Choose an option",
-  Markup.keyboard([["Profile"], ["Settings"]]),
+  Markup.keyboard([["Profile", "Settings"], ["Help"]]),
 );
 ```
+
+> `Markup.keyboard` accepts string buttons directly and converts them to keyboard buttons.
 
 ---
 
