@@ -1,7 +1,7 @@
 <header>
 
 <div align="center">
-<img src="docs/assets/logo.svg" alt="logo" height="90" align="center">
+<img src="./docs/assets/Icon.png" alt="logo" height="200" align="center">
 <h1 align="center">balegraf.js</h1>
 
 <p>Modern Bale Bot API framework for Node.js</p>
