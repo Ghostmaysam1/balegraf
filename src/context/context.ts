@@ -10,6 +10,7 @@ export interface BaseContext {
     readonly update: Update
     readonly updateType: UpdateTypes
     readonly from: User
+    readonly chat: Chat | null
 
     reply(text: string, markup?: ReplyMarkup): Promise<Message>
     replyWithPhoto(photo: InputFile, options?: MediaOptions): Promise<Message>
@@ -52,6 +53,7 @@ export interface CallbackQueryContext extends BaseContext {
 export interface PreCheckoutQueryContext extends BaseContext {
     readonly preCheckoutQuery: Update['pre_checkout_query'],
     readonly updateType: "pre_checkout_query",
+    readonly chat: null,
 
     answerPreCheckoutQuery(ok: boolean, errorMessage?: string): Promise<void>
 }
@@ -65,7 +67,7 @@ export class Context implements BaseContext {
     readonly callbackQuery?: Update['callback_query']
     readonly callbackData?: string
     readonly user?: User
-    readonly chat?: Chat
+    readonly chat: Chat | null
 
     constructor(update: Update, core: Core) {
         this.updateType = resolveUpdateType(update)
@@ -185,11 +187,12 @@ export class Context implements BaseContext {
         )
     }
 
-    private resolveChat(): Chat | undefined {
+    private resolveChat(): Chat | null {
         return (
             this.update.message?.chat ??
             this.update.edited_message?.chat ??
-            this.update.callback_query?.message?.chat
+            this.update.callback_query?.message?.chat ??
+            null
         )
     }
 }

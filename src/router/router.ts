@@ -1,7 +1,8 @@
-import type { Context, Middleware } from '../core/types'
+import type { Middleware } from '../core/types'
 import type { EventContextMap, Router, Handler, UpdateTypes } from './types'
 import { resolveUpdateType } from '../shared/resolveUpdateType'
 import { CallbackQueryContext, MessageContext, PreCheckoutQueryContext } from '../context/context'
+import { IsCallbackQuery, IsEditedMessage, IsMessage, IsPreCheckoutQuery } from '../../index'
 
 export function createRouter(): Router {
     const commands = new Map<string, Handler<MessageContext>[]>()
@@ -22,8 +23,8 @@ export function createRouter(): Router {
             return
         }
 
-        if (update_type === "message") {
-            let text = (ctx as MessageContext).message.text || ''
+        if (IsMessage(ctx)) {
+            let text = ctx.message.text || ''
 
             // COMMANDS
             if (text.startsWith('/')) {
@@ -31,7 +32,7 @@ export function createRouter(): Router {
 
                 const list = commands.get(cmd)
                 if (list) {
-                    for (const fn of list) await fn(ctx as MessageContext)
+                    for (const fn of list) await fn(ctx)
                     return
                 }
             }
@@ -39,46 +40,46 @@ export function createRouter(): Router {
             // HEARS
             for (const h of hearsList) {
                 if (h.pattern instanceof RegExp) {
-                    if (h.pattern.test(text || '')) await h.fn(ctx as MessageContext)
+                    if (h.pattern.test(text || '')) await h.fn(ctx)
                 } else {
-                    if (text?.includes(h.pattern)) await h.fn(ctx as MessageContext)
+                    if (text?.includes(h.pattern)) await h.fn(ctx)
                 }
             }
 
             // EVENTS
             const messageEvents = events.message
-            for (const fn of messageEvents) await fn(ctx as MessageContext)
+            for (const fn of messageEvents) await fn(ctx)
         }
-        if (update_type === "callback_query") {
+        if (IsCallbackQuery(ctx)) {
 
-            const data = (ctx as CallbackQueryContext).callbackData
+            const data = ctx.callbackData
 
             // ACTIONS
-
             for (const action of actions) {
                 if (action.pattern instanceof RegExp) {
                     if (action.pattern.test(data)) {
-                        await action.fn(ctx as CallbackQueryContext)
+                        await action.fn(ctx)
                     }
                 } else {
                     if (action.pattern === data) {
-                        await action.fn(ctx as CallbackQueryContext)
+                        await action.fn(ctx)
                     }
                 }
             }
 
             // EVENTS
-
             const callbackEvents = events.callback_query
-            for (const fn of callbackEvents) await fn(ctx as CallbackQueryContext)
+            for (const fn of callbackEvents) await fn(ctx)
         }
-        if (update_type === "pre_checkout_query") {
+        if (IsPreCheckoutQuery(ctx)) {
+            // EVENTS
             const preCheckoutEvents = events.pre_checkout_query
-            for (const fn of preCheckoutEvents) await fn(ctx as PreCheckoutQueryContext)
+            for (const fn of preCheckoutEvents) await fn(ctx)
         }
-        if (update_type === "edited_message") {
+        if (IsEditedMessage(ctx)) {
+            // EVENTS
             const editedMessageEvents = events.edited_message
-            for (const fn of editedMessageEvents) await fn(ctx as MessageContext)
+            for (const fn of editedMessageEvents) await fn(ctx)
         }
 
         await next()

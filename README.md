@@ -32,10 +32,15 @@
 - Reply keyboards
 - Keyboard removal
 - Callback query support
+- Callback query answers (`ctx.answerCallbackQuery`)
 - Message editing support
 - Message deletion support
 - Photo sending support
 - File upload support
+- `InputFile` helpers for path, file ID, URL, buffer, and stream
+- Button helpers: `Markup.button.text`, `Markup.button.contact`, `Markup.button.location`, `Markup.button.url`, `Markup.button.copy`
+- Type guards: `IsMessage`, `IsEditedMessage`, `IsCallbackQuery`, `IsPreCheckoutQuery`
+- Pre-checkout query support (`bot.on('pre_checkout_query')`)
 - TypeScript support
 - Long polling updates
 - Lightweight core
@@ -190,6 +195,25 @@ await ctx.reply(
 ```
 
 > `Markup.inlineKeyboard` now accepts plain text buttons via `Markup.button.text()`.
+
+---
+
+## Button Helpers
+
+Use built-in helper methods to create text, contact, location, URL, and copy buttons for inline keyboards.
+
+```ts
+await ctx.reply(
+  "Choose an option",
+  Markup.inlineKeyboard([
+    [Markup.button.text("Plain text")],
+    [Markup.button.url("Open site", "https://example.com")],
+    [Markup.button.contact("Share contact")],
+    [Markup.button.location("Share location")],
+    [Markup.button.copy("Copy text")],
+  ]),
+);
+```
 
 ---
 
@@ -349,12 +373,43 @@ ctx.reply(...)
 ctx.replyWithPhoto(...)
 
 ctx.answerCallbackQuery(...)
+ctx.answerPreCheckoutQuery(...)
 
 ctx.editMessageText(...)
 ctx.editMessageCaption(...)
 ctx.editMessageReplyMarkup(...)
 
 ctx.deleteMessage()
+```
+
+---
+
+## Type Guards
+
+```ts
+import { IsMessage, IsPreCheckoutQuery } from "@balegraf/balegraf";
+
+bot.on("message", async (ctx) => {
+  if (IsMessage(ctx)) {
+    await ctx.reply("This is a message update");
+  }
+});
+
+bot.on("pre_checkout_query", async (ctx) => {
+  if (IsPreCheckoutQuery(ctx)) {
+    await ctx.answerPreCheckoutQuery(true);
+  }
+});
+```
+
+---
+
+## Pre-checkout Queries
+
+```ts
+bot.on("pre_checkout_query", async (ctx) => {
+  await ctx.answerPreCheckoutQuery(true);
+});
 ```
 
 ---

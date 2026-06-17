@@ -1,5 +1,3 @@
-import { CallbackQueryContext, Context, EditedMessageContext, MessageContext, PreCheckoutQueryContext } from "../context/context"
-export { Context } from "../context/context";
+import { BaseContext } from "../context/context"
 
-export type Middleware = (ctx: MessageContext | CallbackQueryContext | PreCheckoutQueryContext | Context, next: () => Promise<void>) => Promise<void>
-
+export type Middleware = (ctx: BaseContext, next: () => Promise<void>) => Promise<void> | void

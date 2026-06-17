@@ -1,7 +1,8 @@
-import { Context, Middleware } from './types'
+import { BaseContext } from '../context/context'
+import { Middleware } from './types'
 
 export function compose(middlewares: Middleware[]) {
-    return async (ctx: Context, next?: () => Promise<void>) => {
+    return async (ctx: BaseContext, next?: () => Promise<void>) => {
         let index = -1
 
         const dispatch = async (i: number): Promise<void> => {

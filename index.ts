@@ -4,8 +4,9 @@ import { Middleware } from './src/core/types';
 import { createRouter } from './src/router/router'
 import { ActionPattern, EventContextMap, Handler, HearsPattern, UpdateTypes } from './src/router/types';
 import { PollingOptions } from './src/types'
-import { BaseContext, CallbackQueryContext, MessageContext, PreCheckoutQueryContext } from './src/context/context';
-import { Context } from './src/core/types'
+import { BaseContext, CallbackQueryContext, EditedMessageContext, MessageContext, PreCheckoutQueryContext } from './src/context/context';
+
+export type { BaseContext, CallbackQueryContext, EditedMessageContext, MessageContext, PreCheckoutQueryContext, UpdateTypes }
 
 export { Markup } from './src/markup/Markup';
 export { InputFile } from './src/types/inputFile'
@@ -51,4 +52,21 @@ export class Balegraf {
         this.engine.use(this.router.middleware);
         this.engine.startPolling(options ?? {});
     }
+}
+
+
+export function IsMessage(ctx: BaseContext): ctx is MessageContext {
+    return (ctx as MessageContext).updateType == "message"
+}
+
+export function IsEditedMessage(ctx: BaseContext): ctx is EditedMessageContext {
+    return (ctx as EditedMessageContext).updateType == "edited_message"
+}
+
+export function IsCallbackQuery(ctx: BaseContext): ctx is CallbackQueryContext {
+    return (ctx as CallbackQueryContext).updateType == "callback_query"
+}
+
+export function IsPreCheckoutQuery(ctx: BaseContext): ctx is PreCheckoutQueryContext {
+    return (ctx as PreCheckoutQueryContext).updateType == "pre_checkout_query"
 }
