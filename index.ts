@@ -10,6 +10,7 @@ export type { BaseContext, CallbackQueryContext, EditedMessageContext, MessageCo
 
 export { Markup } from './src/markup/Markup';
 export { InputFile } from './src/types/inputFile'
+export { session } from './src/session'
 
 export class Balegraf {
     private engine: Core

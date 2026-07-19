@@ -11,6 +11,8 @@ export interface BaseContext {
     readonly updateType: UpdateTypes
     readonly from: User
     readonly chat: Chat | null
+    session: any
+
 
     reply(text: string, markup?: ReplyMarkup): Promise<Message>
     replyWithPhoto(photo: InputFile, options?: MediaOptions): Promise<Message>
@@ -18,9 +20,9 @@ export interface BaseContext {
 }
 
 export interface MessageContext extends BaseContext {
-    readonly message: Message,
-    readonly updateType: "message",
-    readonly chat: Chat,
+    readonly message: Message
+    readonly updateType: "message"
+    readonly chat: Chat
 
     editMessageText(text: string, markup?: ReplyMarkup): Promise<Message>
     editMessageCaption(caption: string, markup?: ReplyMarkup): Promise<Message>
@@ -29,8 +31,8 @@ export interface MessageContext extends BaseContext {
 
 export interface EditedMessageContext extends BaseContext {
     readonly message: Message,
-    readonly updateType: "edited_message",
-    readonly chat: Chat,
+    readonly updateType: "edited_message"
+    readonly chat: Chat
 
     editMessageText(text: string, markup?: ReplyMarkup): Promise<Message>
     editMessageCaption(caption: string, markup?: ReplyMarkup): Promise<Message>
@@ -38,11 +40,11 @@ export interface EditedMessageContext extends BaseContext {
 }
 
 export interface CallbackQueryContext extends BaseContext {
-    readonly callbackQuery: Update['callback_query'],
-    readonly updateType: "callback_query",
-    readonly chat: Chat,
-    readonly message?: Message,
-    readonly callbackData: string,
+    readonly callbackQuery: Update['callback_query']
+    readonly updateType: "callback_query"
+    readonly chat: Chat
+    readonly message?: Message
+    readonly callbackData: string
 
     editMessageText(text: string, markup?: ReplyMarkup): Promise<Message>
     editMessageCaption(caption: string, markup?: ReplyMarkup): Promise<Message>
@@ -51,9 +53,9 @@ export interface CallbackQueryContext extends BaseContext {
 }
 
 export interface PreCheckoutQueryContext extends BaseContext {
-    readonly preCheckoutQuery: Update['pre_checkout_query'],
-    readonly updateType: "pre_checkout_query",
-    readonly chat: null,
+    readonly preCheckoutQuery: Update['pre_checkout_query']
+    readonly updateType: "pre_checkout_query"
+    readonly chat: null
 
     answerPreCheckoutQuery(ok: boolean, errorMessage?: string): Promise<void>
 }
@@ -68,6 +70,7 @@ export class Context implements BaseContext {
     readonly callbackData?: string
     readonly user?: User
     readonly chat: Chat | null
+    session: any = {};
 
     constructor(update: Update, core: Core) {
         this.updateType = resolveUpdateType(update)
