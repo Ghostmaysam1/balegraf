@@ -35,7 +35,7 @@ export class Polling {
 
             } catch (err) {
                 console.error(err)
-                await sleep(500);
+                await sleep(100);
             }
         }
     }

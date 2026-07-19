@@ -1,6 +1,6 @@
 const BALE_API_URL = 'https://tapi.bale.ai/bot'
 import { ReplyMarkup } from '../markup/types';
-import { BaleApiOptions, BaleUpdatesResponse } from './types'
+import { BaleApiOptions, BaleUpdatesErrorResponse, BaleUpdatesOkResponse } from './types'
 import { InputFile } from '../types/inputFile';
 import { MediaOptions } from '../types';
 import FormData from 'form-data'
@@ -20,8 +20,18 @@ export class BaleApi {
     private async callApi(request: string, payload: any = {}) {
         let url = this.getUrl(request)
 
-        const res = await axios.post(url, payload)
-        return res.data
+        try {
+            const res = await axios.post(url, payload)
+            return res.data
+        } catch (err: any) {
+            if (err.response && err.response.data) {
+                const errorBody = err.response.data as BaleUpdatesErrorResponse;
+                console.error("Error: code(" + errorBody.error_code + ")", errorBody.description);
+            } else {
+                console.error("Network or Unknown Error:", err.message);
+            }
+            return {}
+        }
     }
 
     async getUpdates(offset?: number, limit = 100, timeout = 5) {
@@ -29,10 +39,20 @@ export class BaleApi {
 
         if (offset !== undefined) payload.offset = offset
 
-        const url = this.getUrl('getUpdates');
-        const body = (await axios.get(url, { params: payload })).data as BaleUpdatesResponse
 
-        return body.result ?? []
+        const url = this.getUrl('getUpdates');
+        try {
+            const body = (await axios.get(url, { params: payload })).data as BaleUpdatesOkResponse
+            return body.result ?? []
+        } catch (err: any) {
+            if (err.response && err.response.data) {
+                const errorBody = err.response.data as BaleUpdatesErrorResponse;
+                console.error("Error: code(" + errorBody.error_code + ")", errorBody.description);
+            } else {
+                console.error("Network or Unknown Error:", err.message);
+            }
+            return []
+        }
     }
 
     sendMessage(chat_id: string | number, text: string, reply_markup?: ReplyMarkup
