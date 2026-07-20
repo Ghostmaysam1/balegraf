@@ -1,13 +1,13 @@
-import { InlineKeyboardButton, KeyboardButton } from '../types'
+import { InlineKeyboardButtons, KeyboardButtons } from "../types"
 
 export interface ReplyKeyboardMarkup {
-    keyboard: KeyboardButton[][]
+    keyboard: KeyboardButtons[][]
     resize_keyboard?: boolean
     one_time_keyboard?: boolean
 }
 
 export interface InlineKeyboardMarkup {
-    inline_keyboard: InlineKeyboardButton[][]
+    inline_keyboard: InlineKeyboardButtons[][]
 }
 
 export interface ReplyKeyboardRemove {

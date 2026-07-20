@@ -190,34 +190,52 @@ export interface WebAppInfo {
     url: string
 }
 
-type InlineKeyboardButtonAction =
-    | { url: string }
-    | { callback_data: string }
-    | { web_app: WebAppInfo }
-    | { copy_text: CopyTextButton }
-    | { request_contact: boolean }
-    | { request_location: boolean }
-
 export type TextButton = {
     text: string
 }
 
-export type InlineKeyboardButton =
+export type ContactButton = {
+    text: string,
+    request_contact: boolean
+}
+
+export type LocationButton = {
+    text: string,
+    request_location: boolean
+}
+
+export type UrlButton = {
+    text: string,
+    url: string
+}
+
+export type CallbackButton = {
+    text: string,
+    callback_data: string
+}
+
+export type WebappButton = {
+    text: string,
+    web_app: WebAppInfo
+}
+
+export type CopytextButton = {
+    text: string,
+    copy_text: {
+        text: string
+    }
+}
+
+
+export type InlineKeyboardButtons =
     | TextButton
-    | (TextButton & { url: string })
-    | (TextButton & { callback_data: string })
-    | (TextButton & { web_app: WebAppInfo })
-    | (TextButton & { copy_text: CopyTextButton })
-    | (TextButton & { request_contact: boolean })
-    | (TextButton & { request_location: boolean })
+    | UrlButton
+    | CallbackButton
+    | WebappButton
+    | CopytextButton
 
-export interface CopyTextButton {
-    text: string
-}
-
-export interface KeyboardButton {
-    text: string
-    request_contact?: boolean
-    request_location?: boolean
-    web_app?: WebAppInfo
-}
+export type KeyboardButtons =
+    | TextButton
+    | ContactButton
+    | LocationButton
+    | WebappButton

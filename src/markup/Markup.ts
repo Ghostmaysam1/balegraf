@@ -1,17 +1,22 @@
-import { InlineKeyboardButton, KeyboardButton, TextButton } from '../types'
+import { CallbackButton, ContactButton, CopytextButton, InlineKeyboardButtons, KeyboardButtons, LocationButton, TextButton, UrlButton } from '../types'
 import { ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardMarkup } from './types'
 
 export class Markup {
     static keyboard(
-        keyboard: Array<Array<KeyboardButton | string>>
+        keyboard: Array<Array<KeyboardButtons>>,
+        options?: {
+            resize_keyboard?: boolean,
+            one_time_keyboard?: boolean
+        }
     ): ReplyKeyboardMarkup {
         return {
-            keyboard: keyboard.map(row => row.map(item => typeof item === 'string' ? { text: item } : item))
+            keyboard: keyboard.map(row => row.map(item => typeof item === 'string' ? { text: item } : item)),
+            ...(options && (options))
         };
     }
 
     static inlineKeyboard(
-        inline_keyboard: Array<Array<InlineKeyboardButton | TextButton | string>>
+        inline_keyboard: Array<Array<InlineKeyboardButtons>>
     ): InlineKeyboardMarkup {
         return {
             inline_keyboard: inline_keyboard.map(row => row.map(item => typeof item === 'string' ? { text: item } : item))
@@ -29,38 +34,38 @@ export class Markup {
             return { text };
         },
 
-        contact(text: string): InlineKeyboardButton {
+        contact(text: string): ContactButton {
             return {
                 text,
                 request_contact: true,
             };
         },
 
-        location(text: string): InlineKeyboardButton {
+        location(text: string): LocationButton {
             return {
                 text,
                 request_location: true,
             };
         },
 
-        url(text: string, url: string): InlineKeyboardButton {
+        url(text: string, url: string): UrlButton {
             return {
                 text,
                 url,
             };
         },
 
-        copy(text: string): InlineKeyboardButton {
+        copy(text: string, copy_text: string): CopytextButton {
             return {
                 text,
-                copy_text: { text },
+                copy_text: { text: copy_text },
             };
         },
 
         callback(
             text: string,
             callback_data: string
-        ): InlineKeyboardButton {
+        ): CallbackButton {
             return {
                 text,
                 callback_data,
