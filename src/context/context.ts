@@ -11,8 +11,23 @@ export interface BaseContext {
     readonly updateType: UpdateTypes
     readonly from: User
     readonly chat: Chat | null
-    session: any
 
+    session: any
+    __sceneSession?: any
+
+    // این دو مورد را اختیاری (?) تعریف می‌کنیم 
+    // تا اگر کاربری از Stage استفاده نکرد، تایپ‌ها به هم نریزد
+    scene?: {
+        state: any,
+        enter: (sceneId: string, initialState?: any) => Promise<void>,
+        leave: () => Promise<void>
+    }
+
+    wizard?: {
+        next: () => void,
+        back: () => void,
+        selectStep: (index: number) => void
+    }
 
     reply(text: string, markup?: ReplyMarkup): Promise<Message>
     replyWithPhoto(photo: InputFile, options?: MediaOptions): Promise<Message>
@@ -70,7 +85,14 @@ export class Context implements BaseContext {
     readonly callbackData?: string
     readonly user?: User
     readonly chat: Chat | null
+
     session: any = {};
+    __sceneSession?: any;
+
+    // علامت ! به تایپ‌اسکریپت اطمینان می‌دهد که مقادیر 
+    // خارج از Constructor (توسط میان‌افزار) مقداردهی خواهند شد
+    scene!: BaseContext['scene'];
+    wizard!: BaseContext['wizard'];
 
     constructor(update: Update, core: Core) {
         this.updateType = resolveUpdateType(update)

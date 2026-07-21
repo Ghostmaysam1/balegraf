@@ -11,6 +11,8 @@ export type { BaseContext, CallbackQueryContext, EditedMessageContext, MessageCo
 export { Markup } from './src/markup/Markup';
 export { InputFile } from './src/types/inputFile'
 export { session } from './src/session'
+export { WizardScene } from './src/scene/wizard'
+export { Stage } from './src/scene/stage'
 
 export class Balegraf {
     private engine: Core
